@@ -34,7 +34,9 @@ Future<TranslationResponse> createTranslationResponse(String text) async {
     }),
   );
 
+  print("");
   print(json.decode(response.body));
+  print("");
 
   if (response.statusCode == 200) {
     return TranslationResponse.fromJson(json.decode(response.body));
