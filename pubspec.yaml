@@ -32,6 +32,9 @@ dependencies:
   # Added for https://flutter.dev/docs/cookbook/networking/send-data
   http: ^0.12.1
 
+  #
+  rxdart: ^0.24.1
+
 
 dev_dependencies:
   flutter_test:
