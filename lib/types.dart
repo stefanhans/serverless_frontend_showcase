@@ -20,7 +20,7 @@ class Translation {
         '\n"sourceLanguage": ${this.sourceLanguage}, '
         '\n"targetText": ${this.targetText}, '
         '\n"targetLanguage": ${this.targetLanguage} '
-        '\n}');;
+        '\n}');
   }
 }
 
@@ -52,7 +52,7 @@ class Translator {
         '\n"text": ${this.text}, '
         '\n"sourceLanguage": ${this.sourceLanguage}, '
         '\n"targetLanguage": ${this.targetLanguage}, '
-        '\n"translations": [\n ${translationStr}'
+        '\n"translations": [\n $translationStr'
         '] \n}');
 //    return jsonEncode(this);
   }
