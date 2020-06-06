@@ -6,11 +6,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import './types.dart';
+
 /*
 Platform documentation: https://docs.flutter.io/flutter/dart-io/Platform-class.html
 kIsWeb documentation: https://api.flutter.dev/flutter/foundation/kIsWeb-constant.html
 */
 String url;
+String text = "";
 
 Future<TranslationResponse> createTranslationResponse(
     {String text,
@@ -23,6 +26,11 @@ Future<TranslationResponse> createTranslationResponse(
     url =
         'https://europe-west1-hybrid-cloud-22365.cloudfunctions.net/Translation';
   }
+
+  print("text: " + text);
+  print("sourceLanguage: " + sourceLanguage);
+  print("targetLanguage: " + targetLanguage);
+
   final http.Response response = await http.post(
     url,
     headers: <String, String>{
@@ -44,58 +52,31 @@ Future<TranslationResponse> createTranslationResponse(
   }
 }
 
-class TranslationResponse {
-  final String taskId;
-  final String translatedText;
-  final List<String> loadCommands;
-
-  TranslationResponse({this.taskId, this.translatedText, this.loadCommands});
-
-  factory TranslationResponse.fromJson(Map<String, dynamic> json) {
-    print("factory TranslationResponse");
-    print(json.toString());
-    return TranslationResponse(
-      taskId: json['taskId'],
-      translatedText: json['translatedText'],
-      loadCommands: json['loadCommands'].cast<String>(),
-    );
-  }
-  factory TranslationResponse.error(String description) {
-    print("factory TranslationResponse error");
-    print(description);
-    return TranslationResponse(
-      taskId: "error",
-      translatedText: description,
-      loadCommands: null,
-    );
-  }
-}
+var translator = Translator("0.0.1", "beab10c6-deee-4843-9757-719566214526",
+    "initial null", "en", "de");
 
 class PageWidget extends StatelessWidget {
   var textValue;
-  final BehaviorSubject<String> translationTask =
-      BehaviorSubject.seeded("nothing yet");
+  final BehaviorSubject<String> translationTask = BehaviorSubject.seeded("");
 
-  void translate(String languageCode) {
-    createTranslationResponse(text: textValue, targetLanguage: languageCode)
+  void translate(String text, String sourceLanguageCode, String targetLanguageCode) {
+    print("translate("+text+", "+sourceLanguageCode+", "+targetLanguageCode+")");
+    print(translator.toJson());
+    if (translator.translations.isEmpty) {
+      print("INITIAL");
+      translator.text = textValue;
+    }
+
+    createTranslationResponse(text: translator.text, sourceLanguage: sourceLanguageCode, targetLanguage: targetLanguageCode)
         .then((value) {
       if (value.taskId != 'error') {
         translationTask.add(value?.translatedText ?? "");
       } else {
+        translator.text = textValue;
         translationTask.add(value?.translatedText ?? "");
       }
     });
   }
-
-//  _translate() = createTranslationResponse(
-//  text: textValue, targetLanguage: "zh")
-//      .then((value) {
-//  if (value.taskId != 'error') {
-//  translationTask.add(value?.translatedText ?? "");
-//  } else {
-//  translationTask.add(value?.translatedText ?? "");
-//  }
-//  });
 
   @override
   Widget build(BuildContext context) {
@@ -123,59 +104,80 @@ class PageWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              RaisedButton(
-                child: Text("Translate to French"),
-                onPressed: () {
-                  translate("fr");
-                },
+              Row(
+                children: [
+                  RaisedButton(
+                    child: Text("English"),
+                    onPressed: () {
+                      translate(translator.text, translator.sourceLanguage, "en");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("German"),
+                    onPressed: () {
+                      translate(translator.text, translator.sourceLanguage, "de");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("French"),
+                    onPressed: () {
+                      translate(translator.text, translator.sourceLanguage, "fr");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("Spanish"),
+                    onPressed: () {
+                      translate(translator.text, translator.sourceLanguage, "es");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("Italian"),
+                    onPressed: () {
+                      translate(translator.text, translator.sourceLanguage, "it");
+                    },
+                  ),
+                ],
               ),
-              RaisedButton(
-                child: Text("Translate to Russian"),
-                onPressed: () {
-                  translate("ru");
-                },
-              ),
-              RaisedButton(
-                child: Text("Translate to Spanish"),
-                onPressed: () {
-                  translate("es");
-                },
-              ),
-              RaisedButton(
-                child: Text("Translate to Italian"),
-                onPressed: () {
-                  translate("it");
-                },
-              ),
-              RaisedButton(
-                child: Text("Translate to Dutch"),
-                onPressed: () {
-                  translate("nl");
-                },
-              ),
-              RaisedButton(
-                child: Text("Translate to Thai"),
-                onPressed: () {
-                  translate("th");
-                },
-              ),
-              RaisedButton(
-                child: Text("Translate to Chinese"),
-                onPressed: () {
-                  translate("zh");
-                },
-              ),
-              RaisedButton(
-                child: Text("Translate to Arabic"),
-                onPressed: () {
-                  translate("ar");
-                },
-              ),
+//              Row(
+//                children: [
+//                  RaisedButton(
+//                    child: Text("Russian"),
+//                    onPressed: () {
+//                      translate("ru");
+//                    },
+//                  ),
+//                  RaisedButton(
+//                    child: Text("Chinese"),
+//                    onPressed: () {
+//                      translate("zh");
+//                    },
+//                  ),
+//                  RaisedButton(
+//                    child: Text("Arabic"),
+//                    onPressed: () {
+//                      translate("ar");
+//                    },
+//                  ),
+//                  RaisedButton(
+//                    child: Text("Thai"),
+//                    onPressed: () {
+//                      translate("th");
+//                    },
+//                  ),
+//                  RaisedButton(
+//                    child: Text("Hindi"),
+//                    onPressed: () {
+//                      translate("hi");
+//                    },
+//                  ),
+//                ],
+//              ),
+
               StreamBuilder<String>(
                 stream: translationTask.asBroadcastStream(),
                 initialData: translationTask.value,
                 builder: (context, snapshot) {
-                  final text = snapshot.data;
+                  text = text + "\n" + snapshot.data;
                   return Text("$text");
                 },
               ),
