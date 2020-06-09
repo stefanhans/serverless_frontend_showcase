@@ -1,11 +1,7 @@
 import './ui.dart';
 
-
-var translator = Translator("0.0.1", "beab10c6-deee-4843-9757-719566214526",
-    "", "en", "");
-
-var tmpText = "";
-var tmpSourceLanguage = "";
+var translator =
+    Translator("0.0.1", "beab10c6-deee-4843-9757-719566214526", "", "en", "");
 
 class TranslationDisplay {
   String taskId;
@@ -109,18 +105,11 @@ class TranslationResponse {
     print(translator.toJson());
     print("####");
 
-
-    if ( translationDisplay.status == "translated") {
-
-      translationDisplay.taskId = json['taskId'];
-      translationDisplay.sourceLanguage = translator.sourceLanguage;
-      translationDisplay.sourceText = translator.text;
-      translationDisplay.targetLanguage = translator.targetLanguage;
-      translationDisplay.targetText = json['translatedText'];
-    }
-
-    tmpText = json['translatedText'];
-    tmpSourceLanguage = translator.sourceLanguage;
+    translationDisplay.taskId = json['taskId'];
+    translationDisplay.sourceLanguage = translator.sourceLanguage;
+    translationDisplay.sourceText = translator.text;
+    translationDisplay.targetLanguage = translator.targetLanguage;
+    translationDisplay.targetText = json['translatedText'];
 
     translator.sourceLanguage = translator.targetLanguage;
 
@@ -140,4 +129,3 @@ class TranslationResponse {
     );
   }
 }
-

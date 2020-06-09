@@ -12,6 +12,10 @@ class PageWidget extends StatelessWidget {
 
   void reset() {
 
+    print("before reset ####");
+    print(translator.toJson());
+    print("####");
+
     translator.targetLanguage = "";
 
 
@@ -22,7 +26,12 @@ class PageWidget extends StatelessWidget {
     translationDisplay.targetText = "";
 
     translator.text = textValue;
+    translator.sourceLanguage = "en";
     translationTask.value = textValue ?? "";
+
+    print("after reset ####");
+    print(translator.toJson());
+    print("####");
   }
 
   void translate(
@@ -81,7 +90,7 @@ class PageWidget extends StatelessWidget {
                     child: TextField(
                       onChanged: (text) => textValue = text,
                     ),
-                    width: 432,
+                    width: 232,
                   ),
                   RaisedButton(
                     child: Text("Reset"),
@@ -114,20 +123,20 @@ class PageWidget extends StatelessWidget {
                           translator.text, translator.sourceLanguage, "fr");
                     },
                   ),
-                  RaisedButton(
-                    child: Text("Spanish"),
-                    onPressed: () {
-                      translate(
-                          translator.text, translator.sourceLanguage, "es");
-                    },
-                  ),
-                  RaisedButton(
-                    child: Text("Italian"),
-                    onPressed: () {
-                      translate(
-                          translator.text, translator.sourceLanguage, "it");
-                    },
-                  ),
+//                  RaisedButton(
+//                    child: Text("Spanish"),
+//                    onPressed: () {
+//                      translate(
+//                          translator.text, translator.sourceLanguage, "es");
+//                    },
+//                  ),
+//                  RaisedButton(
+//                    child: Text("Italian"),
+//                    onPressed: () {
+//                      translate(
+//                          translator.text, translator.sourceLanguage, "it");
+//                    },
+//                  ),
                 ],
               ),
               Row(
@@ -153,20 +162,20 @@ class PageWidget extends StatelessWidget {
                           translator.text, translator.sourceLanguage, "ar");
                     },
                   ),
-                  RaisedButton(
-                    child: Text("Thai"),
-                    onPressed: () {
-                      translate(
-                          translator.text, translator.sourceLanguage, "th");
-                    },
-                  ),
-                  RaisedButton(
-                    child: Text("Hindi"),
-                    onPressed: () {
-                      translate(
-                          translator.text, translator.sourceLanguage, "hi");
-                    },
-                  ),
+//                  RaisedButton(
+//                    child: Text("Thai"),
+//                    onPressed: () {
+//                      translate(
+//                          translator.text, translator.sourceLanguage, "th");
+//                    },
+//                  ),
+//                  RaisedButton(
+//                    child: Text("Hindi"),
+//                    onPressed: () {
+//                      translate(
+//                          translator.text, translator.sourceLanguage, "hi");
+//                    },
+//                  ),
                 ],
               ),
               StreamBuilder<String>(
@@ -193,6 +202,8 @@ class PageWidget extends StatelessWidget {
                           ": \"" +
                           translationDisplay.targetText +
                           "\"";
+                      translator.text = translationDisplay.targetText;
+                      translator.sourceLanguage = translationDisplay.targetLanguage;
                   }
 
 
@@ -209,7 +220,6 @@ class PageWidget extends StatelessWidget {
 //                      "\"";
 
 
-                  translator.text = tmpText;
 
                   print("!!!");
                   print(translator.toJson());
