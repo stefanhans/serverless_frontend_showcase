@@ -1,5 +1,34 @@
 import './ui.dart';
 
+
+var translator = Translator("0.0.1", "beab10c6-deee-4843-9757-719566214526",
+    "", "en", "");
+
+var tmpText = "";
+var tmpSourceLanguage = "";
+
+class TranslationDisplay {
+  String taskId;
+  String sourceText;
+  String sourceLanguage;
+  String targetText;
+  String targetLanguage;
+  String status;
+
+  TranslationDisplay(String taskId, String sourceText, String sourceLanguage,
+      String targetText, String targetLanguage, String status) {
+    this.sourceText = sourceText;
+    this.sourceLanguage = sourceLanguage;
+    this.targetText = targetText;
+    this.targetLanguage = targetLanguage;
+    this.status = status;
+  }
+}
+
+var translationDisplay = TranslationDisplay("", "", "", "", "", "initial");
+
+var myApp = PageWidget();
+
 class Translation {
   String taskId;
   String sourceText;
@@ -80,13 +109,20 @@ class TranslationResponse {
     print(translator.toJson());
     print("####");
 
-    translator.text = json['translatedText'];
+
+    if ( translationDisplay.status == "translated") {
+
+      translationDisplay.taskId = json['taskId'];
+      translationDisplay.sourceLanguage = translator.sourceLanguage;
+      translationDisplay.sourceText = translator.text;
+      translationDisplay.targetLanguage = translator.targetLanguage;
+      translationDisplay.targetText = json['translatedText'];
+    }
+
+    tmpText = json['translatedText'];
+    tmpSourceLanguage = translator.sourceLanguage;
+
     translator.sourceLanguage = translator.targetLanguage;
-
-    print("!!!");
-    print(translator.toJson());
-    print("!!!");
-
 
     return TranslationResponse(
       taskId: json['taskId'],
