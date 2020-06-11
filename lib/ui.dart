@@ -55,11 +55,12 @@ class PageWidget extends StatelessWidget {
     }
 
     createTranslationResponse(
-            text: translationDisplay.sourceText,
+            text: translator.text,
             sourceLanguage: sourceLanguageCode,
             targetLanguage: targetLanguageCode)
         .then((value) {
       if (value.taskId != 'error') {
+
         translationTask.add(value?.translatedText ?? "");
       } else {
         translator.text = translationDisplay.sourceText;
@@ -93,7 +94,6 @@ class PageWidget extends StatelessWidget {
                       ),
                       onChanged: (text) {
                         textValue = text;
-                        translationDisplay.sourceText = text;
                       },
                       onSubmitted: (text) {
                         print("SUBMITTED: " + text);
@@ -116,21 +116,21 @@ class PageWidget extends StatelessWidget {
                     child: Text("English"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "en");
+                          translator.text, translator.sourceLanguage, "en");
                     },
                   ),
                   RaisedButton(
                     child: Text("German"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "de");
+                          translator.text, translator.sourceLanguage, "de");
                     },
                   ),
                   RaisedButton(
                     child: Text("French"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "fr");
+                          translator.text, translator.sourceLanguage, "fr");
                     },
                   ),
                 ],
@@ -141,21 +141,21 @@ class PageWidget extends StatelessWidget {
                     child: Text("Spanish"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "es");
+                          translator.text, translator.sourceLanguage, "es");
                     },
                   ),
                   RaisedButton(
                     child: Text("Italian"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "it");
+                          translator.text, translator.sourceLanguage, "it");
                     },
                   ),
                   RaisedButton(
                     child: Text("Portuguese"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "pt");
+                          translator.text, translator.sourceLanguage, "pt");
                     },
                   ),
                 ],
@@ -166,21 +166,21 @@ class PageWidget extends StatelessWidget {
                     child: Text("Russian"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "ru");
+                          translator.text, translator.sourceLanguage, "ru");
                     },
                   ),
                   RaisedButton(
                     child: Text("Chinese"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "zh-CN");
+                          translator.text, translator.sourceLanguage, "zh-CN");
                     },
                   ),
                   RaisedButton(
                     child: Text("Arabic"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "ar");
+                          translator.text, translator.sourceLanguage, "ar");
                     },
                   ),
                 ],
@@ -191,21 +191,21 @@ class PageWidget extends StatelessWidget {
                     child: Text("Thai"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "th");
+                          translator.text, translator.sourceLanguage, "th");
                     },
                   ),
                   RaisedButton(
                     child: Text("Hindi"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "hi");
+                          translator.text, translator.sourceLanguage, "hi");
                     },
                   ),
                   RaisedButton(
                     child: Text("Indonesian"),
                     onPressed: () {
                       translate(
-                          translationDisplay.sourceText, translator.sourceLanguage, "id");
+                          translator.text, translator.sourceLanguage, "id");
                     },
                   ),
                 ],
@@ -239,7 +239,7 @@ class PageWidget extends StatelessWidget {
                           break;
                         case "restart":
                           print("CASE: RESTART");
-                          text = "en: \"" + translationDisplay.sourceText + "\"";
+                          text = "en: \"" + textValue + "\"";
                           translator.targetLanguage = "en";
                           translator.text = textValue;
                           break;
