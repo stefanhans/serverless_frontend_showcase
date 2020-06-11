@@ -4,32 +4,33 @@ import 'package:rxdart/rxdart.dart';
 import './types.dart';
 import './net.dart';
 
+var translationDisplay = TranslationDisplay("", "", "", "", "", "initial");
+
+var myApp = PageWidget();
 
 var textValue;
 
 class PageWidget extends StatelessWidget {
   final BehaviorSubject<String> translationTask = BehaviorSubject.seeded("");
 
-  void reset() {
-
-    print("before reset ####");
+  void restart() {
+    print("before restart ####");
     print(translator.toJson());
     print("####");
 
     translator.targetLanguage = "";
 
-
-    translationDisplay.status = "reset";
+    translationDisplay.status = "restart";
     translationDisplay.sourceLanguage = "en";
-    translationDisplay.sourceText = textValue;
+//    translationDisplay.sourceText = textValue;
     translationDisplay.targetLanguage = "";
     translationDisplay.targetText = "";
 
-    translator.text = textValue;
+    translator.text = translationDisplay.sourceText;
     translator.sourceLanguage = "en";
-    translationTask.value = textValue ?? "";
+    translationTask.value = translationDisplay.sourceText;
 
-    print("after reset ####");
+    print("after restart ####");
     print(translator.toJson());
     print("####");
   }
@@ -43,26 +44,25 @@ class PageWidget extends StatelessWidget {
         ", " +
         targetLanguageCode +
         ")");
-//    print(translator.toJson());
-    if (translator.translations.isEmpty) {
-      print("INITIAL");
-      translator.text = textValue;
+    if (translationDisplay.status == "initial") {
+      print("TRANSLATE INITIAL: " + translationDisplay.toString());
+      translator.text = translationDisplay.sourceText;
     }
 
     if (sourceLanguageCode == targetLanguageCode) {
-      print("RETURN");
+      print(sourceLanguageCode + " == " + targetLanguageCode);
       return;
     }
 
     createTranslationResponse(
-            text: translator.text,
+            text: translationDisplay.sourceText,
             sourceLanguage: sourceLanguageCode,
             targetLanguage: targetLanguageCode)
         .then((value) {
       if (value.taskId != 'error') {
         translationTask.add(value?.translatedText ?? "");
       } else {
-        translator.text = textValue;
+        translator.text = translationDisplay.sourceText;
         translationTask.add(value?.translatedText ?? "");
       }
     });
@@ -71,13 +71,13 @@ class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Translate Text',
+      title: 'Chain of Translations',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Translate Text'),
+          title: Text('Chain of Translations'),
         ),
         body: Container(
           alignment: Alignment.center,
@@ -88,14 +88,24 @@ class PageWidget extends StatelessWidget {
                 children: [
                   Container(
                     child: TextField(
-                      onChanged: (text) => textValue = text,
+                      decoration: InputDecoration(
+                        hintText: 'start with an English text...',
+                      ),
+                      onChanged: (text) {
+                        textValue = text;
+                        translationDisplay.sourceText = text;
+                      },
+                      onSubmitted: (text) {
+                        print("SUBMITTED: " + text);
+                        restart();
+                      },
                     ),
-                    width: 232,
+                    width: 250,
                   ),
                   RaisedButton(
-                    child: Text("Reset"),
+                    child: Text("Restart"),
                     onPressed: () {
-                      reset();
+                      restart();
                     },
                   ),
                 ],
@@ -106,37 +116,48 @@ class PageWidget extends StatelessWidget {
                     child: Text("English"),
                     onPressed: () {
                       translate(
-                          translator.text, translator.sourceLanguage, "en");
+                          translationDisplay.sourceText, translator.sourceLanguage, "en");
                     },
                   ),
                   RaisedButton(
                     child: Text("German"),
                     onPressed: () {
                       translate(
-                          translator.text, translator.sourceLanguage, "de");
+                          translationDisplay.sourceText, translator.sourceLanguage, "de");
                     },
                   ),
                   RaisedButton(
                     child: Text("French"),
                     onPressed: () {
                       translate(
-                          translator.text, translator.sourceLanguage, "fr");
+                          translationDisplay.sourceText, translator.sourceLanguage, "fr");
                     },
                   ),
-//                  RaisedButton(
-//                    child: Text("Spanish"),
-//                    onPressed: () {
-//                      translate(
-//                          translator.text, translator.sourceLanguage, "es");
-//                    },
-//                  ),
-//                  RaisedButton(
-//                    child: Text("Italian"),
-//                    onPressed: () {
-//                      translate(
-//                          translator.text, translator.sourceLanguage, "it");
-//                    },
-//                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  RaisedButton(
+                    child: Text("Spanish"),
+                    onPressed: () {
+                      translate(
+                          translationDisplay.sourceText, translator.sourceLanguage, "es");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("Italian"),
+                    onPressed: () {
+                      translate(
+                          translationDisplay.sourceText, translator.sourceLanguage, "it");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("Portuguese"),
+                    onPressed: () {
+                      translate(
+                          translationDisplay.sourceText, translator.sourceLanguage, "pt");
+                    },
+                  ),
                 ],
               ),
               Row(
@@ -145,92 +166,128 @@ class PageWidget extends StatelessWidget {
                     child: Text("Russian"),
                     onPressed: () {
                       translate(
-                          translator.text, translator.sourceLanguage, "ru");
+                          translationDisplay.sourceText, translator.sourceLanguage, "ru");
                     },
                   ),
                   RaisedButton(
                     child: Text("Chinese"),
                     onPressed: () {
                       translate(
-                          translator.text, translator.sourceLanguage, "zh-CN");
+                          translationDisplay.sourceText, translator.sourceLanguage, "zh-CN");
                     },
                   ),
                   RaisedButton(
                     child: Text("Arabic"),
                     onPressed: () {
                       translate(
-                          translator.text, translator.sourceLanguage, "ar");
+                          translationDisplay.sourceText, translator.sourceLanguage, "ar");
                     },
                   ),
-//                  RaisedButton(
-//                    child: Text("Thai"),
-//                    onPressed: () {
-//                      translate(
-//                          translator.text, translator.sourceLanguage, "th");
-//                    },
-//                  ),
-//                  RaisedButton(
-//                    child: Text("Hindi"),
-//                    onPressed: () {
-//                      translate(
-//                          translator.text, translator.sourceLanguage, "hi");
-//                    },
-//                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  RaisedButton(
+                    child: Text("Thai"),
+                    onPressed: () {
+                      translate(
+                          translationDisplay.sourceText, translator.sourceLanguage, "th");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("Hindi"),
+                    onPressed: () {
+                      translate(
+                          translationDisplay.sourceText, translator.sourceLanguage, "hi");
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("Indonesian"),
+                    onPressed: () {
+                      translate(
+                          translationDisplay.sourceText, translator.sourceLanguage, "id");
+                    },
+                  ),
                 ],
               ),
               StreamBuilder<String>(
-                stream: translationTask.asBroadcastStream(),
-                initialData: translationTask.value,
-                builder: (context, snapshot) {
-                  print("xxxxx");
-                  switch (translationDisplay.status) {
-                    case  "initial":
-                      text = "";
-                      break;
-                    case  "reset":
-                      text = "en: \"" + textValue + "\"";
-                      translator.targetLanguage = "en";
-                      translator.text = textValue;
-                      break;
-                    default:
-                      translationDisplay.targetText = snapshot?.data ?? "";
-                      text = translationDisplay.sourceLanguage +
-                          ": \"" +
-                          translationDisplay.sourceText +
-                          "\"\n" +
-                          translationDisplay.targetLanguage +
-                          ": \"" +
-                          translationDisplay.targetText +
-                          "\"";
-                      translator.text = translationDisplay.targetText;
-                      translator.sourceLanguage = translationDisplay.targetLanguage;
-                  }
+                  stream: translationTask.asBroadcastStream(),
+                  initialData: translationTask.value,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+//                    var txt = SelectableText("");
+                    if (snapshot.hasError) {
+                      var txt = SelectableText(
+                        'Error: ${snapshot.error}',
+                        textAlign: TextAlign.left,
+                        showCursor: true,
+//                        enableInteractiveSelection: true,
+                        toolbarOptions: ToolbarOptions(
+                            copy: true,
+                            selectAll: true,
+                            cut: false,
+                            paste: false),
+                      );
+                      return txt;
+//                      return Text('Error: ${snapshot.error}');
+                    }
+                    if (snapshot.connectionState == ConnectionState.active ||
+                        snapshot.connectionState == ConnectionState.done) {
+                      switch (translationDisplay.status) {
+                        case "initial":
+                          text = "";
+                          break;
+                        case "restart":
+                          print("CASE: RESTART");
+                          text = "en: \"" + translationDisplay.sourceText + "\"";
+                          translator.targetLanguage = "en";
+                          translator.text = textValue;
+                          break;
+                        default:
+                          print("CASE: DEFAULT");
+                          translationDisplay.targetText = snapshot?.data ?? "";
+                          text = translationDisplay.taskId +
+                              "\n" +
+                              translationDisplay.sourceLanguage +
+                              ": \"" +
+                              translationDisplay.sourceText +
+                              "\"\n" +
+                              translationDisplay.targetLanguage +
+                              ": \"" +
+                              translationDisplay.targetText +
+                              "\"";
+                          translator.text = translationDisplay.targetText;
+                          translator.sourceLanguage =
+                              translationDisplay.targetLanguage;
+                      }
 
-
-//                  translationDisplay.targetText = snapshot.data;
-//                  text = "TaskId: \t" + translationDisplay.taskId +
-//                      "\n" +
-//                      translationDisplay.sourceLanguage +
-//                      ": \"" +
-//                      translationDisplay.sourceText +
-//                      "\"\n" +
-//                      translationDisplay.targetLanguage +
-//                      ": \"" +
-//                      translationDisplay.targetText +
-//                      "\"";
-
-
-
-                  print("!!!");
-                  print(translator.toJson());
-                  print("!!!");
+                      print("!!!");
+                      print(translator.toJson());
+                      print("!!!");
 
 //                  if (snapshot.data.length == 0) {
 //                    return Text("");
 //                  }
-                  return Text("$text");
-                },
-              ),
+                      var txt = SelectableText(
+                        "$text",
+                        textAlign: TextAlign.left,
+//                    textScaleFactor: 0.95,
+                        showCursor: true,
+//                        enableInteractiveSelection: true,
+                        toolbarOptions: ToolbarOptions(
+                            copy: true,
+                            selectAll: true,
+                            cut: false,
+                            paste: false),
+                      );
+                      return txt;
+                    }
+                    return SizedBox(
+                      child: const CircularProgressIndicator(),
+                      width: 60,
+                      height: 60,
+                    );
+                  }),
             ],
           ),
         ),

@@ -1,7 +1,5 @@
 import './ui.dart';
-
-var translator =
-    Translator("0.0.1", "beab10c6-deee-4843-9757-719566214526", "", "en", "");
+import './net.dart';
 
 class TranslationDisplay {
   String taskId;
@@ -21,33 +19,6 @@ class TranslationDisplay {
   }
 }
 
-var translationDisplay = TranslationDisplay("", "", "", "", "", "initial");
-
-var myApp = PageWidget();
-
-class Translation {
-  String taskId;
-  String sourceText;
-  String sourceLanguage;
-  String targetText;
-  String targetLanguage;
-
-  Translation(String taskId, String sourceText, String sourceLanguage,
-      String targetText, String targetLanguage) {
-    this.sourceText = sourceText;
-    this.sourceLanguage = sourceLanguage;
-    this.targetText = targetText;
-    this.targetLanguage = targetLanguage;
-  }
-
-  String toJson() {
-    return ('{ \n"sourceText": ${this.sourceText}, '
-        '\n"sourceLanguage": ${this.sourceLanguage}, '
-        '\n"targetText": ${this.targetText}, '
-        '\n"targetLanguage": ${this.targetLanguage} '
-        '\n}');
-  }
-}
 
 class Translator {
   String clientVersion;
@@ -55,7 +26,6 @@ class Translator {
   String text;
   String sourceLanguage;
   String targetLanguage;
-  List<Translation> translations;
 
   Translator(String clientVersion, String clientId, String text,
       String sourceLanguage, String targetLanguage) {
@@ -64,22 +34,15 @@ class Translator {
     this.text = text;
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage;
-    this.translations = new List<Translation>();
   }
 
   String toJson() {
-    String translationStr;
-    for (var translation in this.translations) {
-      translationStr = translation.toJson();
-    }
     return ('{ \n"clientVersion": ${this.clientVersion}, '
         '\n"clientId": ${this.clientId}, '
         '\n"text": ${this.text}, '
         '\n"sourceLanguage": ${this.sourceLanguage}, '
         '\n"targetLanguage": ${this.targetLanguage}, '
-        '\n"translations": [\n $translationStr'
-        '] \n}');
-//    return jsonEncode(this);
+        '\n}');
   }
 }
 
@@ -93,13 +56,6 @@ class TranslationResponse {
   factory TranslationResponse.fromJson(Map<String, dynamic> json) {
     print("factory TranslationResponse");
     print(json.toString());
-
-    translator.translations.add(Translation(
-        json['taskId'],
-        translator.text,
-        translator.sourceLanguage,
-        json['translatedText'],
-        translator.targetLanguage));
 
     print("####");
     print(translator.toJson());
@@ -119,6 +75,7 @@ class TranslationResponse {
       loadCommands: json['loadCommands'].cast<String>(),
     );
   }
+
   factory TranslationResponse.error(String description) {
     print("factory TranslationResponse error");
     print(description);
