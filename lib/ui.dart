@@ -8,12 +8,12 @@ var translationDisplay = TranslationDisplay("", "", "", "", "", "initial");
 
 var myApp = PageWidget();
 
-var textValue;
+var textValue = "";
 
 class PageWidget extends StatelessWidget {
   final BehaviorSubject<String> translationTask = BehaviorSubject.seeded("");
 
-  void restart() {
+  void initChain() {
     print("before restart ####");
     print(translator.toJson());
     print("####");
@@ -45,8 +45,21 @@ class PageWidget extends StatelessWidget {
         targetLanguageCode +
         ")");
     if (translationDisplay.status == "initial") {
-      print("TRANSLATE INITIAL: " + translationDisplay.toString());
-      translator.text = translationDisplay.sourceText;
+      print("TRANSLATE INITIAL");
+      if (text.isEmpty) {
+        if (textValue.isEmpty){
+          initChain();
+          return;
+        }
+        text = textValue;
+      }
+//      translator.text = translationDisplay.sourceText;
+      translator.text = text;
+    }
+
+    if (translationDisplay.status == "error") {
+      initChain();
+      return;
     }
 
     if (sourceLanguageCode == targetLanguageCode) {
@@ -60,9 +73,9 @@ class PageWidget extends StatelessWidget {
             targetLanguage: targetLanguageCode)
         .then((value) {
       if (value.taskId != 'error') {
-
         translationTask.add(value?.translatedText ?? "");
       } else {
+        translationDisplay.status = "error";
         translator.text = translationDisplay.sourceText;
         translationTask.add(value?.translatedText ?? "");
       }
@@ -97,17 +110,17 @@ class PageWidget extends StatelessWidget {
                       },
                       onSubmitted: (text) {
                         print("SUBMITTED: " + text);
-                        restart();
+                        initChain();
                       },
                     ),
-                    width: 250,
+                    width: 350,
                   ),
-                  RaisedButton(
-                    child: Text("Restart"),
-                    onPressed: () {
-                      restart();
-                    },
-                  ),
+//                  RaisedButton(
+//                    child: Text("(Re)Init"),
+//                    onPressed: () {
+//                      initChain();
+//                    },
+//                  ),
                 ],
               ),
               Row(
@@ -242,6 +255,14 @@ class PageWidget extends StatelessWidget {
                           text = "en: \"" + textValue + "\"";
                           translator.targetLanguage = "en";
                           translator.text = textValue;
+                          break;
+                        case "error":
+                          print("CASE: ERROR");
+                          text = "error: \"" + snapshot?.data ?? "" + "\"";
+//                          print(translator.toJson());
+//                          translator.text = translationDisplay.sourceText;
+//                          translationDisplay.sourceLanguage = translationDisplay.targetLanguage;
+//                          print(translator.toJson());
                           break;
                         default:
                           print("CASE: DEFAULT");
